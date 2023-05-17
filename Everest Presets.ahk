@@ -21,18 +21,18 @@ if !FileExist(presetFolder)
 	FileAppend,
 	(LTrim,On
 		`# This is a preset file. Add names of mods below to add them to the preset.
-		`# If the line doesn't end with .zip, it will be appended
+		`# If the line ends with .zip, it will be removed
 		`# '`#' acts as a comment: lines starting with it are ignored, along with any text preceded by it
 		`# Lines starting with * are selected by default.
 		`# **ALL** as the first line will select the entire preset by default.
 
 		`# If '`#' removed, would check all by default
 		`# **ALL**
-		exampleMod1 `# Unchecked by default and will be listed as exampleMod1.zip
+		exampleMod1.zip `# Unchecked by default and will be listed as exampleMod1
 		`# Will not be listed
-		`# exampleMod2.zip
+		`# exampleMod2
 		`# Will be checked by default
-		* exampleMod3.zip
+		* exampleMod3
 	), %presetFolder%\examplePreset.txt
 
 	MsgBox,, %appName%, Celeste\Mods\%presetFolder% created! Add some presets and run me again.
