@@ -1,0 +1,5 @@
+** ALL **
+
+BetterRefillGems
+ExtendedVariantMode
+SpeedrunTool

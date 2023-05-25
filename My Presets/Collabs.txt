@@ -1,0 +1,8 @@
+# Packs Preset
+
+AnarchyCollab2022
+SecretSanta2022
+SpringCollab2020
+StrawberryJam2021
+WinterCollab2021
+CornCollab

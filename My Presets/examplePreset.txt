@@ -1,0 +1,6 @@
+# This is a preset file. Add names of mods below to add them to the preset.
+# Lines starting with # are ignored.
+
+exampleMod1.zip
+exampleMod2.zip
+exampleMod3.zip
