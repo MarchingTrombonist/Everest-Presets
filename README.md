@@ -44,7 +44,7 @@ Launch Everest! When you do, make sure to click the "Install Missing Dependencie
 ![image](https://github.com/MarchingTrombonist/Everest-Presets/assets/58573254/d21aed23-d57d-42e4-ba35-9038c090152a)
 
 ## Presets
-A preset consists of any mods that you would like to have easy access to. You can add comments with \#, check a mod by default with \*, or even check the entire preset by default with **ALL**
+A preset consists of any mods that you would like to have easy access to. You can add comments with \#, check a mod by default with \*, or even check the entire preset by default with \*\*ALL\*\*
 
 When first run, it will generate an example preset. This file will be ignored, so you don't have to worry about it cluttering up your GUI.
 
