@@ -1,5 +1,8 @@
 ** ALL **
 
 BetterRefillGems
+CollabLobbyUI
+DeathTracker
 ExtendedVariantMode
+Golden QOL
 SpeedrunTool
