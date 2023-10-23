@@ -1,6 +1,6 @@
-﻿#NoEnv ; Recommended for performance and compatibility (future AutoHotkey releases.
+﻿; #NoEnv ; Recommended for performance and compatibility (future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist (detecting common errors.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+SendMode "Input" ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 
 ; gives the program a name
@@ -9,33 +9,33 @@ appName := "Everest Presets"
 ; check if in right directory
 if !(RegExMatch(A_WorkingDir, "\\Celeste\\Mods$"))
 {
-	MsgBox,, %appName%, Move me to \Celeste\Mods and try again!
+	MsgBox("Move me to \Celeste\Mods and try again!", appName)
 	ExitApp
 }
 
 ; Creates preset folder
-presetFolder := "Presets"
+presetFolder := "TESTING_CHANGE_ME"
 if !FileExist(presetFolder)
 {
-	FileCreateDir, %presetFolder%
-	FileAppend,
-	(LTrim,On
-		`# This is a preset file. Add names of mods below to add them to the preset.
-		`# If the line ends with .zip, it will be removed
-		`# '`#' acts as a comment: lines starting with it are ignored, along with any text preceded by it
-		`# Lines starting with * are selected by default.
-		`# **ALL** as the first line will select the entire preset by default.
+	DirCreate(presetFolder)
+	FileAppend("
+	(
+		# This is a preset file. Add names of mods below to add them to the preset.
+		# If the line ends with .zip, it will be removed
+		# '#' acts as a comment: lines starting with it are ignored, along with any text preceded by it
+		# Lines starting with * are selected by default.
+		# **ALL** as the first line will select the entire preset by default.
 
-		`# If '`#' removed, would check all by default
-		`# **ALL**
-		exampleMod1.zip `# Unchecked by default and will be listed as exampleMod1
-		`# Will not be listed
-		`# exampleMod2
-		`# Will be checked by default
+		# If '#' removed, would check all by default
+		# **ALL**
+		exampleMod1.zip # Unchecked by default and will be listed as exampleMod1
+		# Will not be listed
+		# exampleMod2
+		# Will be checked by default
 		* exampleMod3
-	), %presetFolder%\examplePreset.txt
+	)", presetFolder . "\examplePreset.txt")
 
-	MsgBox,, %appName%, Celeste\Mods\%presetFolder% created! Add some presets and run me again.
+	MsgBox("Celeste\Mods\" . presetFolder . " created! Add some presets and run me again.", appName)
 	ExitApp
 }
 
@@ -44,14 +44,14 @@ prevState := []
 curState := []
 
 ; Creates GUI
-Gui, New
+myGUI := Gui()
 
-Gui, Add, TreeView, Checked AltSubmit gtvClicked h300 w300
-Gui, Add, Button, default gbuttonScript, &Update mod list
+TV := myGUI.AddTreeView("Checked AltSubmit gtvClicked h300 w300")
+Gui(Add, Button, default gbuttonScript, &Update mod list)
 root := TV_Add("All Presets")
 
 ; Adds nodes
-Loop, Files, %presetFolder%\*.txt
+Loop(Files, presetFolder . "\*.txt")
 {
 	newPreset := RegExReplace(A_LoopFileName, "\.txt")
 	if (newPreset = "examplePreset")
@@ -61,7 +61,7 @@ Loop, Files, %presetFolder%\*.txt
 	curPreset := TV_Add(newPreset, root)
 	; tracks default checking
 	allChecked := False
-	Loop, Read, %presetFolder%\%A_LoopFileName%
+	Loop(Read, presetFolder . "\" . A_LoopFileName)
 	{
 		; tracks default checking
 		itemChecked := False
@@ -87,7 +87,7 @@ Loop, Files, %presetFolder%\*.txt
 }
 
 ; Show the window and its TreeView.
-Gui, Show, AutoSize Center, %appName%
+Gui(Show, AutoSize Center, appName)
 ; updates default checks
 defaultCheck()
 ; selects root
@@ -100,8 +100,9 @@ GuiClose:
 ExitApp
 
 ; Exit Script (Win + Esc)
-#Esc::
-ExitApp
+#Esc::{
+	ExitApp
+}
 return
 
 ; runs on treeView clicked
@@ -147,7 +148,7 @@ leftClick()
 	; if something has been checked or unchecked
 	if (prevState.length() != curState.length())
 	{
-		changedArr := % getCheckChange()
+		changedArr := getCheckChange()
 		for key,ID in changedArr
 		{
 			; gets checked item and selects it
@@ -165,8 +166,8 @@ leftClick()
 ; runs when button clicked
 buttonScript:
 	createBlacklist()
-	MsgBox,, %appName%, Everest mod list updated!`nEverest will update dependencies on launch.
-	Gui, Destroy
+	MsgBox("Everest mod list updated!`nEverest will update dependencies on launch.", appName)
+	Gui(Destroy)
 ExitApp
 return
 
@@ -201,13 +202,13 @@ getCheckChange()
 	}
 
 	; any items left in the larger state are changed
-	return % largeArr
+	return largeArr
 }
 
 updateState()
 {
 	; changes states
-	global prevState := % curState
+	global prevState := curState
 	global curState := []
 	global root
 
@@ -292,17 +293,17 @@ createBlacklist()
 	global curState
 
 	; removes old blacklist and starts new with header
-	FileDelete, blacklist.txt
-	FileAppend,
-	(LTrim,On
-		`# This is the blacklist. Lines starting with `# are ignored.
-		`# File generated through the "Manage Installed Mods" screen in Olympus
+	FileDelete("blacklist.txt")
+	FileAppend("
+	(
+		# This is the blacklist. Lines starting with # are ignored.
+		# File generated through the "Manage Installed Mods" screen in Olympus
 
 		Presets
-	), blacklist.txt
+	)", blacklist.txt)
 
 	; Adds checked .zips to whitelist
-	whitelist :=
+	whitelist := ""
 	for index,ID in curState
 	{
 		TV_GetText(fileName, ID)
@@ -313,14 +314,14 @@ createBlacklist()
 	}
 
 	; Writes all .zips to blacklist with # if in whitelist
-	Loop, Files, *.zip
+	Loop(Files, "*.zip")
 	{
 		curFile := A_LoopFileName
-		FileAppend, `n, blacklist.txt
+		FileAppend("`n", blacklist.txt)
 		if (inStr(whitelist, curFile))
 		{
-			FileAppend,`#` ,blacklist.txt
+			FileAppend("#" ,blacklist.txt)
 		}
-		FileAppend,%A_LoopFileName%, blacklist.txt
+		FileAppend(A_LoopFileName, blacklist.txt)
 	}
 }
