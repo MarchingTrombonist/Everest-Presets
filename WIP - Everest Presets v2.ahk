@@ -1,6 +1,45 @@
 ﻿#Requires AutoHotkey v2.0
 #SingleInstance
 
+
+; gives the program a name
+appName := "Everest Presets"
+
+; check if in right directory
+if !(RegExMatch(A_WorkingDir, "\\Celeste\\Mods$"))
+{
+	MsgBox("Move me to \Celeste\Mods and try again!", appName)
+	ExitApp
+}
+
+; Creates preset folder
+presetFolder := "Presets"
+if !FileExist(presetFolder)
+{
+	DirCreate presetFolder
+	FileAppend "
+	( LTrim
+		# This is a preset file. Add names of mods below to add them to the preset.
+		# If the line ends with .zip, it will be removed
+		# '#' acts as a comment: lines starting with it are ignored, along with any text preceded by it
+		# Lines starting with * are selected by default.
+		# **ALL** as the first line will select the entire preset by default.
+
+		# If '#' removed, would check all by default
+		# **ALL**
+		exampleMod1.zip # Unchecked by default and will be listed as exampleMod1
+		# Will not be listed
+		# exampleMod2
+		# Will be checked by default
+		* exampleMod3
+	)", presetFolder "\examplePreset.txt"
+
+	MsgBox("Celeste\Mods\" presetFolder " created! Add some presets and run me again.", appName)
+	ExitApp
+}
+
+
+
 MyGui := Gui()
 TV := MyGui.Add("TreeView", "Checked h300 w300")
 
@@ -17,8 +56,12 @@ P2C2C1 := TV.Add("Child 2's first child", P2C2)
 
 ; Show the window and its TreeView.
 MyGui.Show
-
  
+onCheck(GuiCtrl, itemID, checked) {
+    itemID := GuiCtrl.Modify(itemID, "Select")
+    updateChildren(itemID)
+    updateParent(itemID)
+} 
 
 updateChildren(ID) {
     childID := TV.GetChild(ID)
