@@ -1,6 +1,0 @@
-PRESET A
--mod1
--mod2
--Subset AA
---mod 3
-Preset B
