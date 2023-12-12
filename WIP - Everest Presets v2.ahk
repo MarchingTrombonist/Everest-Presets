@@ -40,12 +40,50 @@ if !FileExist(presetFolder)
 
 
 
-MyGui := Gui()
+MyGui := Gui(, appName)
 TV := MyGui.Add("TreeView", "Checked h300 w300")
-
 TV.OnEvent("ItemCheck", onCheck)
 
-root := TV.Add("Root")
+MyBtn := MyGui.Add("Button",, "&Update Mod List")
+MyBtn.OnEvent("Click", onBtnPress)
+
+root := TV_Add("All Presets")
+
+; Adds nodes
+Loop, Files, %presetFolder%\*.txt
+{
+	newPreset := RegExReplace(A_LoopFileName, "\.txt")
+	if (newPreset = "examplePreset")
+	{
+		continue
+	}
+	curPreset := TV_Add(newPreset, root)
+	; tracks default checking
+	allChecked := False
+	Loop, Read, %presetFolder%\%A_LoopFileName%
+	{
+		; tracks default checking
+		itemChecked := False
+		; comment handling
+		newItem := RegExReplace(A_LoopReadLine, "(\s*#.*)|(\.zip)")
+		if (newItem = "")
+		{
+			continue
+		}
+		if (RegExMatch(newItem, "\*\*\s*ALL\s*\*\*"))
+		{
+			allChecked := True
+			TV_Modify(curPreset, "Check")
+			continue
+		}
+		if (RegExMatch(newItem, "^\*"))
+		{
+			itemChecked := True
+			newItem := RegExReplace(newItem, "^\*\s*")
+		}
+		lineItem := TV_Add(newItem, curPreset, ((itemChecked | allChecked) ? "" : "-") "Check")
+	}
+}
 
 P1 := TV.Add("First parent", root)
 P1C1 := TV.Add("Parent 1's first child", P1)
